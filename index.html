@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>김용오 — Unity 클라이언트 개발자</title>
+<meta name="description" content="Unity 클라이언트 개발자 김용오의 포트폴리오. 2026년 4월부터 지금까지, 만든 것과 배운 것을 시간 순서로 정리했습니다.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top">김용오 <b>/</b> Unity Client</a>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ===== 히어로 (배경: 아카이브 영상) ===== -->
+<section class="vhero">
+  <div class="vhero-bg">
+    <video src="media/archive.mp4" poster="media/archive-poster.jpg"
+           autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1"></video>
+  </div>
+  <div class="vhero-shade"></div>
+
+  <div class="wrap">
+    <div class="vhero-inner">
+      <p class="eyebrow">Unity Client Developer · 신입</p>
+      <h1>시스템을 만들고,<br>그것들을 잇는 구조를 설계합니다.</h1>
+      <p class="lede">
+        2017년, AI 도구가 없던 때부터 장르를 가리지 않고 만들어 왔습니다.
+        아래는 2026년 4월부터 지금까지 만든 것과 배운 것을 순서대로 늘어놓은 기록입니다.
+      </p>
+      <button class="arc-open" type="button" id="arcOpen">
+        <span class="dot"></span>배경 영상 · 2017–2020 프로토타입 자세히 보기
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 본문 + 목차 ===== -->
+<div class="wrap layout" style="padding-top:clamp(52px,7vw,84px)">
+
+  <div class="tl-main">
+
+    <!-- 개요 -->
+    <section class="tl" id="overview">
+      <div class="tl-date">개요</div>
+      <div class="tl-body">
+        <h2>김용오<span class="tl-tag">Unity 클라이언트 개발자</span><span class="tl-tag">신입</span></h2>
+        <p>
+          여러 시스템이 맞물려 동작하는 구조에 관심이 있습니다.
+          그래서 개인 프로젝트로는 피쳐들이 가장 많이 얽히는 RPG 장르를 골랐습니다.
+          팀에서는 팀원들이 작업할 수 있도록 프로젝트의 아키텍처를 설계하고 기술적 가이드를 제공하는 역할을 겸했습니다.
+        </p>
+        <ul class="speclist">
+          <li><span class="k">주력</span><span class="v">Unity · C#</span></li>
+          <li><span class="k">경험</span><span class="v">Addressables · Timeline · Input System · NavMesh · JobSystem · URP</span></li>
+          <li><span class="k">역할</span><span class="v">개인 프로젝트 2건 · 팀 프로젝트 4건 (그중 3건 팀장)</span></li>
+        </ul>
+        <div class="actions">
+          <a class="btn solid" href="https://github.com/GmumDev" target="_blank" rel="noopener">GitHub</a>
+          <a class="btn" href="https://develog.kiweb.or.kr/@user_1776858831954" target="_blank" rel="noopener">블로그</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 콘솔 던전 -->
+    <section class="tl" id="console-dungeon">
+      <div class="tl-date">2026.03</div>
+      <div class="tl-body">
+        <h2>DungeonGame<span class="tl-tag">개인</span><span class="tl-tag">순수 C#</span></h2>
+        <p class="tl-role">던전 생성기 · 미니맵 · 세이브/로드 · UI · 몬스터 AI — 1개월</p>
+
+        <div class="tl-media">
+          <video src="media/dungeongame.mp4" poster="media/dungeongame-poster.jpg"
+                 controls muted loop playsinline preload="none"></video>
+        </div>
+
+        <p>
+          KDT 훈련과정에서 주어진 첫 프로젝트형 과제입니다.
+          순수 C#으로 개발되었으며 json을 통한 로컬 세이브/로드가 기본 요구사항이었습니다.
+          여기에 Snake와 같은 특수한 몬스터, 열린 미로를 보장하는 던전 생성기와 미니맵,
+          상점, 박스형 UI를 요구된 범위를 넘어 추가로 구현하였습니다.
+        </p>
+        <div class="actions">
+          <a class="btn" href="https://github.com/GmumDev/ConsoleDungeonGameSourceCode" target="_blank" rel="noopener">GitHub — 소스 코드</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 Simple RPG -->
+    <section class="tl" id="simple-rpg">
+      <div class="tl-date">2026.04</div>
+      <div class="tl-body">
+        <h2>Simple RPG<span class="tl-tag">개인</span></h2>
+        <p class="tl-role">전투 · 성장 · 인벤토리 · 적 AI · 퀘스트 · 시나리오 · 세이브 — 1개월</p>
+
+        <div class="tl-media">
+          <video src="media/smplrpg.mp4" poster="media/smplrpg-poster.jpg"
+                 controls muted loop playsinline preload="none"></video>
+        </div>
+
+        <p>
+          많은 요소가 유기적으로 연결되면서도 유지보수가 가능한 구조를 만들어 보고 싶어 RPG를 택했습니다.
+          시나리오 · 퀘스트 데이터를 에셋으로 분리해 <b>Addressables로 동적 로드</b>했고,
+          시스템이 늘어나면서 <b>EventBus</b>를 도입했습니다.
+          <code>StateMachineBehaviour</code>가 애니메이션에 지나치게 묶이는 문제 때문에 커스텀 FSM으로 갈아엎기도 했습니다.
+        </p>
+        <div class="actions">
+          <a class="btn solid" href="projects/simple-rpg.html">케이스 스터디</a>
+          <a class="btn" href="https://github.com/GmumDev/SimpleRpgSourceCodes" target="_blank" rel="noopener">GitHub — 소스 코드</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 첫 팀 프로젝트 -->
+    <section class="tl" id="team-first">
+      <div class="tl-date">2026.05</div>
+      <div class="tl-body">
+        <h2>첫 협업<span class="tl-tag">팀원</span></h2>
+        <p class="tl-role">메인 프로그래머 — 1개월</p>
+        <p>
+          메인 프로그래머로 참여했고, 결과는 완성도가 낮아 아쉬운 형태로 마무리되었습니다.
+          돌아보면 저는 구현에만 집중했고, 팀이 무엇을 어디까지 만들 것인지 진지하게 고민하지 않았습니다.
+          팀원이었더라도 그 고민만큼은 함께했어야 했습니다.
+          이 경험에서 미루어, 이후의 팀 프로젝트에서는 팀이 나아갈 방향을
+          공통된 인식으로 확인하는 것을 중요히 여기게 되었습니다.
+        </p>
+      </div>
+    </section>
+
+    <!-- 06 VR -->
+    <section class="tl" id="vr">
+      <div class="tl-date">2026.06</div>
+      <div class="tl-body">
+        <h2>Winter Stove<span class="tl-tag lead">팀장</span><span class="tl-tag">VR</span></h2>
+        <p class="tl-role">초기 프로젝트 세팅 · 이벤트 채널 구조 설계 · 사건 컨텐츠 — 1개월</p>
+        <p>
+          팀 전원 VR 관련 SDK 사용 경험이 없었으므로 초기 프로젝트 세팅 후 팀 단위 스터디를 진행하였습니다.
+          팀원이 모두 ScriptableObject에 친숙하였기에, 이를 이벤트 채널로 사용하여
+          독립적인 VR 물리 상호작용이 퀘스트 완료 이벤트를 발송하는 구조를 설계하였습니다.
+          주기적으로 발생하는 사건 컨텐츠를 설계 및 구현하였습니다.
+        </p>
+        <div class="actions">
+          <span class="btn off" aria-disabled="true">GitHub — 공개 준비 중</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 네트워크 RPG -->
+    <section class="tl" id="network-rpg">
+      <div class="tl-date">2026.07–09</div>
+      <div class="tl-body">
+        <h2>Wielder<span class="tl-tag lead">팀장</span><span class="tl-tag">멀티플레이</span><span class="tl-tag wip">진행 중</span></h2>
+        <p class="tl-role">모듈 경계 설계 · CI 파이프라인 · 모듈 간 이벤트 통신 · 네트워크 · 초기 무기 시스템 · 잡몹 · 일부 보스</p>
+        <p>
+          Photon Fusion 2 경험이 없는 팀이 AI로 작업할 경우
+          수정 비용이 큰 충돌이나 회귀가 발생할 수 있다는 점을 가장 큰 리스크로 봤습니다.
+          그래서 시작 전에 팀원별 담당 모듈을 어셈블리 정의(<code>*.asmdef</code>)로 분리해 참조 방향을 문서화하고,
+          모듈별 에이전트 규칙(<code>*.md</code>)과 상태 권한·결정론 같은 네트워크 규칙을 명시한 뒤,
+          Python으로 만든 CI 도구가 <b>매 커밋마다 위반 여부를 검사</b>하도록 파이프라인을 구축했습니다.
+          초기 비용은 적지 않았지만, 덕분에 후반에는 개발과 출시 준비를 병행할 수 있었습니다.
+        </p>
+        <div class="actions">
+          <span class="btn off" aria-disabled="true">GitHub — 공개 준비 중</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08–09 진행 중 -->
+    <section class="tl" id="puzzle">
+      <div class="tl-date">2026.08–09</div>
+      <div class="tl-body">
+        <h2>Yummy Drawer<span class="tl-tag lead">팀장</span><span class="tl-tag">모바일</span><span class="tl-tag wip">진행 중</span></h2>
+        <p class="tl-role">기업 협약 프로젝트 · 맵 클리어 검증 솔버 · 모듈 통합/의존성 주입 — 2개월</p>
+        <p>
+          사양서에 포함된 <b>맵 에디터가 만든 맵이 실제로 클리어 가능한지 검증하는 솔버</b>를 맡았고,
+          각 모듈에서 나온 작업물을 합치는 의존성 주입 구조를 직접 구현해 통합을 담당했습니다.
+          단위 테스트 작성과 결과 해석에는 AI를 활용했습니다.
+          저희 팀은 2개월 일정 중 약 2주 만에 게임의 기본 틀을 완성해 협약 기업의 긍정적인 피드백을 받았고,
+          일정보다 이르게 폴리싱 단계에 들어갔습니다.
+        </p>
+        <div class="actions">
+          <span class="btn off" aria-disabled="true">GitHub — 공개 준비 중</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 팀을 이끌며 -->
+    <section class="tl" id="leading">
+      <div class="tl-date">돌아보며</div>
+      <div class="tl-body">
+        <h2>지금까지 배운 것, 앞으로 배울 것</h2>
+        <p>
+          중학교 3학년 겨울방학에 C언어로 계산기를 만든 것에서 시작해 장르를 넘나들며
+          20개 남짓의 핵심 메카닉을 구현하는 동안, 제 주된 고민과 관심은
+          '어떻게 구현할지'에서 무엇을 어떤 기술을 통해 어떤 구조로 짜 맞추어 나갈지로 바뀌었습니다.
+          26년 6월까지는 일부러 AI 사용을 피했으나, 그 이후의 경험은
+          <b>'어떻게 AI를 잘 쓸 것인가'</b>에 대한 답을 찾아가는 과정이었습니다.
+        </p>
+        <p>
+          팀장으로서 팀원들의 코드 리뷰를 하는 일이 많았습니다.
+          가장 큰 갈등은 모든 무기가 상속받는 <code>WeaponBase</code> 클래스에
+          일부 무기만 사용하는 돌진기(lunge) 관련 필드가 들어간 커밋 하나에서 출발하였습니다.
+          팀원의 커밋은 작업 소요가 적은 방향이었습니다. 그러나 저는 일부 무기만 사용하는
+          lunge 관련 데이터를 모든 무기가 들고 있는 것은 낭비이며, LSP 위반이라고 주장하였습니다.
+          팀원은 구조가 잘못되는 것이 왜 문제가 되느냐고 물었는데,
+          곰곰이 생각해보니 이 프로젝트에 한해서는 여기에 대답할 수 없음을 알았습니다.
+          결국 충분한 논의 끝에 팀원의 의견을 수용하였고,
+          모든 팀원과 함께 팀의 우선순위를 수정하여 구현 자체를 1순위로 두었습니다.
+          이 경험은 시간 등의 자원이 제한된 상황에서,
+          목표에 대한 팀 전체의 공통 인식이 얼마나 중요한지 깨닫게 해주었습니다.
+        </p>
+        <p>
+          돌아보면 저는 계속해서 배웠고, 앞으로도 그렇게 배워나갈 듯합니다.
+          AI를 이용한 업무 자동화를 통해 남는 시간을 동료와의 협업에 쓰며,
+          프로젝트 전체의 맥락을 알고 배포까지의 전 과정에 적극적으로 참여할 수 있는
+          <b>'풀스택' 게임 프로그래머</b>가 되는 것이 제가 목표로 해야할 방향이라고 생각하고 있습니다.
+        </p>
+      </div>
+    </section>
+
+  </div><!-- /tl-main -->
+
+  <!-- 목차 -->
+  <aside class="toc">
+    <ol id="tocList">
+      <li><a href="#overview"><span class="d">—</span><span class="t">개요</span></a></li>
+      <li><a href="#console-dungeon"><span class="d">2026.03</span><span class="t">개인 · 순수 C# 콘솔</span></a></li>
+      <li><a href="#simple-rpg"><span class="d">2026.04</span><span class="t">개인 · RPG</span></a></li>
+      <li><a href="#team-first"><span class="d">2026.05</span><span class="t">팀 · 첫 협업</span></a></li>
+      <li><a href="#vr"><span class="d">2026.06</span><span class="t">팀장 · VR</span></a></li>
+      <li><a href="#network-rpg"><span class="d">2026.07–09</span><span class="t">팀장 · 멀티플레이 RPG</span></a></li>
+      <li><a href="#puzzle"><span class="d">2026.08–09</span><span class="t">팀장 · 모바일 퍼즐</span></a></li>
+      <li><a href="#leading"><span class="d">—</span><span class="t">돌아보며</span></a></li>
+    </ol>
+  </aside>
+
+</div><!-- /layout -->
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 김용오</span>
+    <a href="mailto:gmumdev@gmail.com">gmumdev@gmail.com</a>
+  </div>
+</footer>
+
+<!-- ===== 아카이브 팝업 ===== -->
+<dialog class="arc-modal" id="arcModal" aria-labelledby="arcTitle">
+  <div class="arc-modal-head">
+    <div>
+      <h3 id="arcTitle">아카이브 — 빌드만 남은 프로토타입</h3>
+      <span class="sub">2017–2020 · 10개 이상 중 아홉 개</span>
+    </div>
+    <button class="arc-close" type="button" id="arcClose">닫기 ✕</button>
+  </div>
+  <div class="arc-modal-body">
+    <div class="media">
+      <video id="reelVideo" src="media/archive.mp4" poster="media/archive-poster.jpg"
+             controls muted loop playsinline preload="metadata"></video>
+    </div>
+    <p class="arc-modal-note">
+      생성형 AI가 없던 시절, 버전 관리를 배우기 전에 만든 것들입니다.
+      소스는 남아 있지 않지만 빌드는 여전히 돌아갑니다. 아래 목록을 누르면 해당 지점부터 재생됩니다.
+    </p>
+    <ul class="reel-list">
+      <li><button class="chap" type="button" data-t="0">
+        <span class="t"><span class="time">0:00</span><h4>Beat Safer</h4></span>
+        <p>BPM으로 스냅한 노트 JSON 데이터 관리</p>
+      </button></li>
+      <li><button class="chap" type="button" data-t="6">
+        <span class="t"><span class="time">0:06</span><h4>미사일 피하기</h4></span>
+        <p>3ds Max로 직접 모델링한 가오리를 Unity 애니메이션으로 · 로컬 2인 플레이</p>
+      </button></li>
+      <li><button class="chap" type="button" data-t="18">
+        <span class="t"><span class="time">0:18</span><h4>미니게임 (1) · 횡 슈팅</h4></span>
+        <p>삼각함수 기반 탄막 패턴, 가중치 랜덤 선택</p>
+      </button></li>
+      <li><button class="chap" type="button" data-t="21">
+        <span class="t"><span class="time">0:21</span><h4>미니게임 (2) · 닷지</h4></span>
+        <p>Unity Lit Material 프로퍼티 (당시 Built-in)</p>
+      </button></li>
+      <li><button class="chap" type="button" data-t="23">
+        <span class="t"><span class="time">0:23</span><h4>미니게임 (3) · 물리 슈팅</h4></span>
+        <p>Rigidbody AddForce 기반 발사체</p>
+      </button></li>
+      <li><button class="chap" type="button" data-t="26">
+        <span class="t"><span class="time">0:26</span><h4>미니게임 (4) · FPS</h4></span>
+        <p>NavMesh 적 추적</p>
+      </button></li>
+      <li><button class="chap" type="button" data-t="29">
+        <span class="t"><span class="time">0:29</span><h4>미니게임 (5) · 리듬</h4></span>
+        <p>노트 JSON화 — 여기서의 시행착오가 Beat Safer로</p>
+      </button></li>
+      <li><button class="chap" type="button" data-t="32">
+        <span class="t"><span class="time">0:32</span><h4>원고지</h4></span>
+        <p>View 로직 분리, 동적 버튼 생성</p>
+      </button></li>
+      <li><button class="chap" type="button" data-t="43">
+        <span class="t"><span class="time">0:43</span><h4>서바이벌 슈터</h4></span>
+        <p>C · SDL2, stdio FILE* 로컬 데이터 저장</p>
+      </button></li>
+    </ul>
+  </div>
+</dialog>
+
+<script>
+/* 등장 모션 */
+(function(){
+  var items = document.querySelectorAll('.reveal');
+  if(!items.length) return;
+  if(!('IntersectionObserver' in window) ||
+     window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    items.forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  },{ threshold:.12, rootMargin:'0px 0px -8% 0px' });
+  items.forEach(function(el){ io.observe(el); });
+})();
+
+/* 배경 영상: 모션 최소화 설정이면 정지 */
+(function(){
+  var bg = document.querySelector('.vhero-bg video');
+  if(!bg) return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    bg.removeAttribute('autoplay');
+    bg.pause();
+  }
+})();
+
+/* 목차 스크롤 추적 */
+(function(){
+  var links = [].slice.call(document.querySelectorAll('#tocList a'));
+  if(!links.length) return;
+  var items = links.map(function(a){
+    return { link:a, el:document.querySelector(a.getAttribute('href')), top:0 };
+  }).filter(function(x){ return x.el; });
+  if(!items.length) return;
+
+  /* 위치는 로드/리사이즈 때만 계산 — 스크롤 중에는 레이아웃을 읽지 않음 */
+  function measure(){
+    var y = window.pageYOffset;
+    for(var i=0;i<items.length;i++){
+      items[i].top = items[i].el.getBoundingClientRect().top + y;
+    }
+  }
+  function update(){
+    var line = window.pageYOffset + 120;      // 상단바 아래 기준선
+    var active = items[0];
+    for(var i=0;i<items.length;i++){
+      if(items[i].top <= line) active = items[i];
+    }
+    if(window.innerHeight + window.pageYOffset >= document.documentElement.scrollHeight - 4){
+      active = items[items.length-1];         // 문서 끝에서는 마지막 항목
+    }
+    for(var j=0;j<items.length;j++){
+      items[j].link.classList.toggle('on', items[j] === active);
+    }
+  }
+  function remeasure(){ measure(); update(); }
+
+  window.addEventListener('scroll', update, { passive:true });
+  window.addEventListener('resize', remeasure);
+  window.addEventListener('load', remeasure);
+  document.addEventListener('loadedmetadata', remeasure, true);
+  remeasure();
+})();
+
+/* 아카이브 팝업 */
+(function(){
+  var dlg = document.getElementById('arcModal');
+  var openBtn = document.getElementById('arcOpen');
+  var closeBtn = document.getElementById('arcClose');
+  var v = document.getElementById('reelVideo');
+  if(!dlg || !openBtn) return;
+
+  openBtn.addEventListener('click', function(){
+    if(typeof dlg.showModal === 'function') dlg.showModal();
+    else dlg.setAttribute('open','');
+  });
+  function close(){
+    if(v) v.pause();
+    if(typeof dlg.close === 'function') dlg.close();
+    else dlg.removeAttribute('open');
+  }
+  closeBtn.addEventListener('click', close);
+  dlg.addEventListener('click', function(e){ if(e.target === dlg) close(); });
+  dlg.addEventListener('close', function(){ if(v) v.pause(); });
+
+  /* 챕터 점프 */
+  var btns = [].slice.call(dlg.querySelectorAll('.chap'));
+  var times = btns.map(function(b){ return parseFloat(b.dataset.t); });
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      if(!v) return;
+      v.currentTime = parseFloat(b.dataset.t);
+      v.play();
+    });
+  });
+  function sync(){
+    if(!v) return;
+    var t = v.currentTime, idx = 0;
+    for(var i=0;i<times.length;i++){ if(t >= times[i] - .15) idx = i; }
+    btns.forEach(function(b,i){
+      if(i===idx) b.setAttribute('aria-current','true');
+      else b.removeAttribute('aria-current');
+    });
+  }
+  if(v){ v.addEventListener('timeupdate', sync); sync(); }
+})();
+</script>
+
+</body>
+</html>

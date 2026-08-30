@@ -1,0 +1,15 @@
+### Windows
+# Windows thumbnail cache files
+Thumbs.db
+
+# Folder config file
+[Dd]esktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows shortcuts
+*.lnk
+
+### 미디어 원본 (배포용 media/*.mp4 만 커밋)
+media/raw/

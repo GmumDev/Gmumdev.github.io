@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simple RPG — 케이스 스터디</title>
+<meta name="description" content="Unity 6.3으로 만든 싱글 플레이 RPG. 구조 설계, EventBus 도입 과정, Animator와 FSM 동기화, AI 활용 범위에 대한 기록.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="../index.html">김용오 <b>/</b> Unity Client</a>
+    <nav class="nav">
+      <a href="#intent">설계 의도</a>
+      <a href="#features">피처</a>
+      <a href="#structure">구조</a>
+      <a href="#problems">고민과 해결</a>
+      <a href="#ai">AI 활용</a>
+      <a href="#result">결과 평가</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ===== 히어로 ===== -->
+<section class="cs-hero">
+  <div class="wrap">
+    <a class="cs-back" href="../index.html#featured">← 포트폴리오로</a>
+    <h1>Simple RPG</h1>
+    <p class="cs-meta">싱글 플레이 RPG · 개인 · 1개월 · Unity 6.3 · C#</p>
+    <p class="cs-lede">
+      많은 요소가 유기적으로 연결되면서도 유지보수가 가능한 구조를 만들어 보고 싶어 RPG를 택했습니다.
+      시스템이 하나씩 늘어날 때마다 구조의 한계가 드러났고, 그 지점들과 해결 과정을 남겼습니다.
+    </p>
+
+    <div class="cs-video reveal">
+      <video src="../media/smplrpg.mp4" poster="../media/smplrpg-poster.jpg"
+             controls muted loop playsinline preload="metadata"></video>
+    </div>
+
+    <div class="actions" style="margin-top:24px">
+      <a class="btn solid" href="#problems">고민과 해결 과정</a>
+      <a class="btn" href="https://github.com/GmumDev/SimpleRpgSourceCodes" target="_blank" rel="noopener">GitHub &mdash; 소스 코드</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 01 설계 의도 ===== -->
+<section class="cs-sec" id="intent">
+  <div class="wrap">
+    <h2><span class="n">01</span> 설계 의도</h2>
+    <p class="cs-note">개발 컨셉은 &ldquo;RPG의 다양한 기능 구현&rdquo;이었고, 기획 의도는 세 가지였습니다.</p>
+
+    <div class="cs-grid c3 reveal">
+      <div class="cs-cell">
+        <h3><span class="n">01</span>장르 확장성</h3>
+        <p>RPG의 메인 피처들은 <b>RPG 외 다양한 장르에서도 응용이 가능</b>하다고 판단했습니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3><span class="n">02</span>결합의 문제 경험</h3>
+        <p>대규모 프로젝트의 기능을 <b>구현하고 결합하는 과정에서 발생하는 문제</b>를 직접 겪어보기 위해서였습니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3><span class="n">03</span>구조 설계 능력</h3>
+        <p><b>프로젝트 구조 설계 능력을 끌어올리는 것</b>이 목표였습니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 02 피처 ===== -->
+<section class="cs-sec" id="features">
+  <div class="wrap">
+    <h2><span class="n">02</span> 구현한 피처</h2>
+    <p class="cs-note">
+      게임 흐름은 <code>Title</code> → <code>Init</code>(비동기 인게임 · 세이브 데이터 로딩) → <code>World</code> ⇄ <code>Dungeon</code>으로 순환합니다.
+    </p>
+
+    <div class="cs-grid c2 reveal">
+      <div class="cs-cell">
+        <h3>시나리오</h3>
+        <p>단방향 LinkedList 구조의 <b>노드 기반 시나리오</b>. 선택지 분기와 이벤트 발생을 지원하며, 퀘스트 시작 · 완료, 지역 해금, 시나리오 해금 등을 트리거합니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>퀘스트</h3>
+        <p>이름 · 내용 · <b>다중 조건</b> · <b>다중 보상</b>으로 구성되며, 수락 → 진행 → 완료 사이클을 따릅니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>전투</h3>
+        <p>캐릭터 교체와 파티 구성, 캐릭터별 스킬 분리, 태그 스킬, 쿨타임 출력. 보스는 <b>가중치 기반 패턴 선택</b>으로 동작합니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>인벤토리</h3>
+        <p>드래그로 아이템 위치 교체와 버리기, 최대 64개까지 스택.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>성장 · 아이템 드롭</h3>
+        <p>레벨별 스탯 테이블로 최대 체력 · 최대 경험치 · 공격력 · 방어력을 적용합니다. 몬스터 처치 시 아이템은 즉시 획득되고, 경험치는 플레이어가 근접하면 <b>약한 인력</b>이 작용합니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>상호작용 · 이동</h3>
+        <p>NPC 시나리오 재생, 맵을 둘러보는 <b>타임라인</b>과 시야 오브, 채집. 포탈(트리거)과 게이트(NPC)로 World ⇄ Dungeon 간 <b>비동기 씬 로드</b>를 처리합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 03 구조 설계 ===== -->
+<section class="cs-sec" id="structure">
+  <div class="wrap">
+    <h2><span class="n">03</span> 주요 클래스 구조</h2>
+    <p class="cs-note">RPG 장르로서의 확장성을 적극적으로 고려하고, SOLID를 준수하도록 노력했습니다.</p>
+
+    <div class="cs-grid c2 reveal">
+      <div class="cs-cell">
+        <h3>Player</h3>
+        <p>Player가 <b>Orchestrator</b> 역할을 수행하는 <b>계층적 FSM</b> 구조입니다. 데이터와 로직을 분리해 SRP를 지키고자 했습니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>Scenario</h3>
+        <p>하나의 시나리오 정보를 담는 <code>ScriptableObject</code>가 시나리오 노드 LinkedList의 Head를 참조합니다. 직렬화 데이터(SO)와 런타임 데이터(Context)를 분리하고, <code>IScenarioManager</code> · <code>IScenarioCtxRunner</code>로 인터페이스를 쪼개 ISP를 적용했습니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>Quest</h3>
+        <p><code>IQuestManager</code>(API)와 <code>IQuestRewardEarner</code>(보상 지급)로 역할을 분리했습니다. 각 Service가 추상 Handler를 참조하고 구체 Handler가 실제 로직을 수행하므로, 예를 들어 특정 지역 방문 조건이 필요하면 <code>IConditionChecker</code>를 상속한 <code>VisitChecker</code>만 구현하면 됩니다 &mdash; <b>OCP</b>.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>UI</h3>
+        <p>Normal · Watching · Battle State마다 성격이 다른 UI가 필요했습니다. Player가 각 State에 진입할 때 <code>UIFSM.ChangeState()</code>를 호출하고, UI State가 실제 게임오브젝트를 토글합니다. 구체 로직은 각 Sub-UI 클래스가 <code>EventBus</code>로 관련 이벤트를 구독해 처리합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 04 고민과 해결 ===== -->
+<section class="cs-sec" id="problems">
+  <div class="wrap">
+    <h2><span class="n">04</span> 고민과 해결 (1) &mdash; EventBus</h2>
+    <p class="cs-note">시스템이 늘어날수록 객체 간 의존이 어떻게 번지는지를 가장 직접적으로 체감한 부분입니다.</p>
+
+    <div class="flow reveal">
+      <div class="flow-col">
+        <span class="flow-tag">문제</span>
+        <p style="margin:0 0 12px;color:var(--dim);font-size:14px;line-height:1.7">
+          <code>Enemy.Die()</code> 하나가 호출될 때 UI 갱신, 아이템 드롭, 퀘스트 진행도 갱신, 파티클 풀링이 뒤따랐습니다.
+          <b>Enemy가 다른 클래스에 대해 갖는 의존이 급격히 증가</b>했고, 기능이 추가될 때마다 코드가 한 줄씩 늘었습니다.
+        </p>
+        <p style="margin:0;color:var(--dim);font-size:14px;line-height:1.7">
+          여기에 사운드를 하나 추가한다면 Enemy뿐 아니라 거의 모든 오브젝트 클래스에 한 줄씩을 더해야 했습니다.
+        </p>
+      </div>
+      <div class="flow-col">
+        <span class="flow-tag">1차 시도</span>
+        <p style="margin:0 0 12px;color:var(--dim);font-size:14px;line-height:1.7">
+          <code>event Action</code> 대리자로 <code>Enemy.OnKilledEvent += Listener</code> 방식의 구독을 도입했습니다.
+        </p>
+        <p style="margin:0;color:var(--dim);font-size:14px;line-height:1.7">
+          그러나 대리자를 매번 직접 선언해야 했고, 여러 이벤트를 구독하면 각각을 따로 해지해야 했습니다.
+          무엇보다 <b>Enemy를 수정하지 않아도 대리자에 접근하기 위해 결국 의존성이 발생</b>했습니다.
+        </p>
+      </div>
+    </div>
+
+    <div class="flow-col solved reveal" style="margin-top:20px">
+      <span class="flow-tag">해결</span>
+      <p style="margin:0 0 16px;color:var(--dim);font-size:14px;line-height:1.7">
+        static 클래스 <code>EventBus</code>를 구현하고, 복잡한 이벤트는 이 객체를 통해 구독 · 해지하도록 했습니다.
+      </p>
+      <ul class="cs-list">
+        <li><b>디커플링</b> &mdash; 이벤트를 대리자가 아닌 <b>클래스</b>로 구현했습니다. 내부적으로 <code>Action&lt;T&gt;</code>의 <code>T</code>가 이 클래스이므로, 이벤트 매개변수를 한 번 감싼 래퍼 역할을 합니다. 구독자는 <b>이벤트를 호출한 객체를 전혀 알 필요가 없습니다.</b></li>
+        <li><b>안정성</b> &mdash; 구독 시 <code>SubscriptionToken</code> 인스턴스를 반환하고 해지 시 인자로 전달받습니다. 따라서 리스너를 <b>람다로 작성하더라도 토큰만 있으면 안전하게 해지</b>할 수 있습니다.</li>
+        <li><b>확장성</b> &mdash; 새 이벤트가 생겨도 발행자 코드를 건드리지 않습니다.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 05 Animator + FSM ===== -->
+<section class="cs-sec" id="fsm">
+  <div class="wrap">
+    <h2><span class="n">05</span> 고민과 해결 (2) &mdash; Animator와 FSM 동기화</h2>
+    <p class="cs-note">가장 오래 붙들었던 문제이자, 기술 선택에 대한 판단을 다시 하게 만든 지점입니다.</p>
+
+    <div class="flow reveal">
+      <div class="flow-col">
+        <span class="flow-tag">문제</span>
+        <p style="margin:0 0 12px;color:var(--dim);font-size:14px;line-height:1.7">
+          <code>StateMachineBehaviour</code> 기반 플레이어 상태머신은 <b>Animation과 분리되어 동작할 수 없었습니다.</b>
+        </p>
+        <p style="margin:0;color:var(--dim);font-size:14px;line-height:1.7">
+          결정적으로 Animator의 Transition은 <b>현재 상태의 <code>OnExit</code> 이후에 새 상태의 <code>OnEnter</code>가 호출되는 것을 보장하지 않습니다.</b>
+          Transition 기간이 길면 두 애니메이션이 겹치는 Blend 구간 때문에 진입이 먼저, 퇴장이 나중에 호출됩니다.
+          무결성 문제이자 기능 확장의 걸림돌이었으므로 커스텀 FSM으로 옮기기로 결정했습니다.
+        </p>
+      </div>
+      <div class="flow-col">
+        <span class="flow-tag">그런데</span>
+        <p style="margin:0 0 12px;color:var(--dim);font-size:14px;line-height:1.7">
+          옮기고 나니 이번엔 애니메이션 싱크가 어긋났습니다. 기존에는 <code>Player@Battle</code>에서 <code>Player@OnHit</code>으로 애니메이션이 전환되면
+          Battle의 <code>StateMachineBehaviour</code>가 업데이트되지 않아 <b>경직이 자연스럽게 구현</b>되었습니다.
+        </p>
+        <p style="margin:0;color:var(--dim);font-size:14px;line-height:1.7">
+          커스텀 FSM에서 같은 경직을 만들려면 State를 <code>OnHitState</code>로 바꾸고, 애니메이션 종료를 감지한 뒤 다시 <code>BattleState</code>로 되돌려야 했습니다.
+          그런데 이 상태가 하는 일은 <b>종료 감지뿐</b>이었습니다.
+        </p>
+      </div>
+    </div>
+
+    <div class="flow-col solved reveal" style="margin-top:20px">
+      <span class="flow-tag">해결</span>
+      <p style="margin:0 0 6px;color:var(--dim);font-size:14px;line-height:1.7">
+        역할이 감지뿐이라면 이름도 그래야 한다고 보고 <code>WaitForAnimState</code>로 정리한 뒤, 모든 전환을 두 갈래로 나눴습니다.
+      </p>
+      <pre class="cs-code"><span class="c">// 1. State가 Animation 재생을 결정한다면 → 즉시 전환</span>
+ChangeState(nextState);
+
+<span class="c">// 2. Animation 재생 여부가 State를 결정한다면 → 대기 전환</span>
+void WaitForAnim(string fromTag, string toTag, State nextState);</pre>
+      <ul class="cs-list" style="margin-top:18px">
+        <li><b>즉시 전환</b> &mdash; Animator 트리거를 활성화함과 동시에 State를 전환합니다.</li>
+        <li><b>대기 전환</b> &mdash; 피격 · 공격 애니메이션이 끝날 때까지, 또는 사망 후 부활 버튼을 누를 때까지 기다렸다가 전환합니다.</li>
+        <li><b>유연성</b> &mdash; Animator의 각 Node에 Tag를 입력해 두고 Tag 간 이동을 감지합니다. <code>fromTag</code>나 <code>toTag</code>에 <code>"Any"</code>를 전달하면 해당하는 모든 Tag를 허용하고, 대기 도중 새 요청이 오면 기존 조건을 덮어씁니다.</li>
+        <li><b>부담 최소화</b> &mdash; 폴링 대신 전환 요청 시 구독하고 감지 즉시 해지합니다. 리스너는 FSM에 구현되어 있습니다.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 06 AI 활용 ===== -->
+<section class="cs-sec" id="ai">
+  <div class="wrap">
+    <h2><span class="n">06</span> AI 활용</h2>
+    <p class="cs-note">
+      Gemini &middot; Claude Code CLI + Unity MCP를 사용했습니다. 어디까지 맡겼고 어디서 잘못 썼는지를 함께 남깁니다.
+    </p>
+
+    <div class="cs-grid c3 reveal">
+      <div class="cs-cell">
+        <h3>맡긴 범위</h3>
+        <p>전체 코드 작성을 맡긴 것은 <b>세 곳뿐</b>입니다 &mdash; 커스텀 에디터 윈도우, <code>Addressables</code> 로드 · 세이브 · 덮어쓰기, 인벤토리 드래그. 나머지 게임 로직은 직접 작성했습니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>주로 쓴 방식</h3>
+        <p>클래스 · 함수 · 변수 이름을 묻는 일이 가장 잦았고, 그다음이 아키텍처 토론과 컨텍스트를 제공한 코드 리뷰였습니다. 작업 전에 예상되는 문제를 미리 확인하는 용도로도 썼습니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>토론에 쓴 주제</h3>
+        <p>async 내 Exception Swallowing의 원인, <code>Saved By Batching</code>이 0인 문제(SRP Batcher 동작 방식), Unity 라이프사이클에 따른 호출 순서 등입니다.</p>
+      </div>
+    </div>
+
+    <div class="cs-grid c2 reveal" style="margin-top:20px">
+      <div class="cs-cell">
+        <h3>GIGO &mdash; 프롬프트가 결과를 갈랐다</h3>
+        <p><b>[1]</b> &ldquo;이거 어떻게 구현해?&rdquo; → 그 부분만 구현되어 기존 코드와 호환이 어렵고 일관성도 없었습니다.</p>
+        <p><b>[2]</b> 사용 중인 코드를 함께 제공 → 컨텍스트 덕분에 더 나은 결과를 얻었습니다.</p>
+        <p><b>[3]</b> <code>QuestManager-plan.md</code>를 읽히고 구현 요청 → 컨텍스트와 기획을 함께 주었을 때 가장 좋았습니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>잘못 쓴 사례</h3>
+        <p>Quest와 Scenario는 확장성을 충분히 고려해 설계했습니다. 그런데 AI에게 요청한 <b>커스텀 에디터 윈도우가 하드코딩</b>되면서, 두 시스템이 그 에디터에 의존하게 되어 <b>확장성이 함께 죽었습니다.</b></p>
+        <p>시스템 설계를 아무리 열심히 해도 확장이 어려워 컨텐츠 추가가 까다로워졌습니다. 지금 돌아보면 AI를 매우 잘못 사용한 예시입니다.</p>
+      </div>
+    </div>
+
+    <ul class="cs-list reveal" style="margin-top:26px">
+      <li><b>AI로 반드시 개발이 빨라지지는 않았습니다.</b> 아키텍처에 관해 AI가 준 아이디어는 상당히 괜찮아서 QuestManager와 ScenarioManager에 많이 반영했지만, 그것을 이해하는 일은 결국 제 몫이라 그 지점에서 병목이 생겼습니다. AI가 기획 &mdash; 설계 &mdash; 구현 &mdash; 테스트까지 파이프라인 전체를 담당하지 않는 한 피해갈 수 없는 문제가 아닐까 생각합니다.</li>
+      <li><b>과한 의존은 금물입니다.</b> Exception Swallowing 문제를 물었을 때 잘못된 정보를 받은 적이 있습니다.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== 07 결과 평가 ===== -->
+<section class="cs-sec" id="result">
+  <div class="wrap">
+    <h2><span class="n">07</span> 결과 평가</h2>
+    <p class="cs-note">1개월이라는 기간에 비해 다소 높은 목표를 잡았고, 달성하지 못한 것들이 있습니다.</p>
+
+    <dl class="verdict reveal">
+      <dt>미달성</dt>
+      <dd>
+        <b>아이템 사용</b>과 <b>사운드</b>는 우선순위에서 계속 밀려 결국 구현하지 못했습니다.
+        <b>아이템 제작 · 분해 · 합성 · 강화</b>는 메인 피처 중 가장 후순위로 밀렸고, 이를 포기하는 대신 기존 피처들의 테스트와 리팩토링에 집중했습니다.
+        스킬 가짓수도 부족합니다(마법사 4, 전사 2) &mdash; 전사는 근접 공격이라 애니메이션 에셋이 추가로 필요했고, 마법사는 투사체 종류로 늘릴 수 있어 요구량이 적었습니다.
+      </dd>
+
+      <dt>목표 변경</dt>
+      <dd>
+        무기 스왑을 <b>캐릭터 스왑</b>으로 바꿨습니다. 구현이 편하기도 했고, 요즘 오픈월드 RPG에서 무기 교체는 모델만 바꾸며 스킬은 캐릭터에 귀속되므로 이 방식이 더 적합하다고 판단했습니다.
+      </dd>
+
+      <dt>초과 달성</dt>
+      <dd>
+        계획에 없던 <b>JobSystem</b>을 보스 패턴에 적용했습니다. 크기가 작은 보스 Mesh를 대량으로 렌더링하는 데 사용했습니다.
+      </dd>
+
+      <dt>배운 점</dt>
+      <dd>
+        서로 다른 객체의 상태를 전달하는 방식(EventBus · delegate · 싱글턴 메서드)을 <b>기능의 확장 가능성, 사건의 무게감과 빈도, 두 객체의 관계</b>에 따라 고르게 되었습니다.
+        비동기 반환 타입(<code>async void</code> · <code>async Task</code> · <code>async Awaitable</code>)은 모르고 쓰다가 예외가 삼켜지는 일을 겪고서야 제대로 알게 됐습니다
+        (<a href="https://develog.kiweb.or.kr/@user_1776858831954/stars-%EC%98%A4%EB%A5%98-%EC%82%BC%EC%BC%9C%EC%A7%90-%ED%98%84%EC%83%81" target="_blank" rel="noopener" style="color:var(--ink);text-decoration:underline;text-underline-offset:3px">글로 정리했습니다 →</a>).
+        계층적 FSM과 Player FSM에 UI FSM을 연동하는 방식, UI Layout 컴포넌트도 이때 익혔습니다.
+      </dd>
+
+      <dt>아쉬운 점</dt>
+      <dd>
+        <b>NPC 구조</b>를 처음부터 제대로 잡지 못해 모든 NPC가 QuestGiver가 되어버렸습니다.
+        <b>ScenarioManager</b>는 설계 초기에 UI까지 함께 담당시켰는데 끝까지 관심사를 분리하지 않았습니다(QuestManager는 분리했습니다).
+        <code>QuestRewardHandler</code>를 만들어 두고도 Exp 보상은 하드코딩했습니다 &mdash; <code>ItemRewardHandler</code>처럼 <code>ExpRewardHandler</code>를 구현하면 될 일이었습니다.
+        <b>Enemy는 여전히 <code>StateMachineBehaviour</code> 기반</b>이라 Player와 코드가 일관되지 않습니다.
+        중반에 <code>NavMeshAgent</code>를 추가하며 이동 로직을 새로 짰고, 그 과정의 작은 버그(적이 사망 후에도 이동)가 방치됐습니다.
+        기획이 구체적이지 않아 데이터 구조도 복잡하고 불필요한 필드가 많습니다.
+      </dd>
+
+      <dt>구조적 한계</dt>
+      <dd>
+        <b>Addressables를 데이터 컨테이너로만 썼습니다.</b> 원래는 서버에 데이터를 올려두고 씬마다 필요한 것만 가져오려 했으나, 씬이 둘뿐이고 개별 데이터를 묶어두지 않아 거기까지 가지 못했습니다.
+        퀘스트 의존성(A 클리어 후 B 수행)은 각 QuestGiver가 자기 퀘스트를 따로 관리해 <b>중앙 관리가 불가능합니다.</b>
+        매니저가 특정 퀘스트의 클리어를 감지해 퀘스트 에셋을 갱신하는 구조 &mdash; 서버가 있다면 이 지점에서 반영 &mdash; 였다면 더 좋았을 것입니다.
+      </dd>
+
+      <dt>총평</dt>
+      <dd>
+        <b>작동한다는 이유로 모르는 채 넘어간 것들</b> &mdash; async, 어드레서블 로더 등 &mdash; 을 깊이 이해할 필요가 있겠습니다.
+        시스템만 만들고 컨텐츠를 만들지 않아 설계에 지나치게 몰입한 감이 있습니다.
+        그래도 잘 된 점은, <b>일단 완성된 사이클로 게임이 돌아간다</b>는 것입니다.
+      </dd>
+    </dl>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 김용오</span>
+    <span><a href="../index.html" style="text-decoration:none">포트폴리오로 돌아가기</a></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var items = document.querySelectorAll('.reveal');
+  if(!('IntersectionObserver' in window) ||
+     window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    items.forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  },{ threshold:.12, rootMargin:'0px 0px -8% 0px' });
+  items.forEach(function(el){ io.observe(el); });
+})();
+</script>
+
+</body>
+</html>
