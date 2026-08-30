@@ -388,20 +388,20 @@ footer a:hover{color:var(--ink)}
 .vhero .wrap{position:relative;z-index:2}
 .vhero-inner{padding:clamp(76px,13vw,150px) 0 clamp(60px,9vw,104px)}
 .vhero h1{
-  margin:0 0 24px;font-size:clamp(32px,5.8vw,62px);
-  font-weight:800;line-height:1.18;letter-spacing:-.03em;
+  margin:0 0 24px;font-size:clamp(28px,4.6vw,50px);
+  font-weight:800;line-height:1.2;letter-spacing:-.03em;
 }
-.vhero .lede{margin:0;max-width:56ch;color:var(--dim);font-size:clamp(15px,1.6vw,18px)}
+.vhero .lede{margin:0;max-width:85ch;color:var(--dim);font-size:clamp(15px,1.6vw,18px)}
+.vhero .lede + .lede{margin-top:12px}
 
 .arc-open{
   margin-top:22px;z-index:3;
   display:inline-flex;align-items:center;gap:8px;cursor:pointer;
-  background:rgba(11,11,12,.55);border:1px solid var(--line);border-radius:2px;
+  background:#0B0B0C;border:1px solid var(--line);border-radius:2px;
   color:var(--dim);font-family:var(--mono);font-size:11px;letter-spacing:.05em;
-  padding:8px 13px;transition:border-color .2s,color .2s;backdrop-filter:blur(4px);
+  padding:8px 13px;transition:border-color .2s,color .2s;
 }
 .arc-open:hover{border-color:var(--accent);color:var(--accent)}
-.arc-open .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex:0 0 auto}
 @media(max-width:620px){.arc-open{margin-top:18px}}
 
 /* --- 본문 + 목차 --- */
