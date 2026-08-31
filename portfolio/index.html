@@ -174,6 +174,23 @@
           <b>pre-commit 훅이 매 커밋마다 위반 여부를 검사</b>하도록 구성했습니다.
           초기 비용은 적지 않았지만, 덕분에 후반에는 개발과 출시 준비를 병행할 수 있었습니다.
         </p>
+        <details class="tl-more">
+          <summary>갈등과 팀 우선순위 수정</summary>
+          <div class="tl-more-body">
+            <p>
+              모든 무기가 상속받는 <code>WeaponBase</code> 클래스에
+              일부 무기만 사용하는 돌진기(lunge) 관련 필드가 들어간 커밋 하나에서 출발하였습니다.
+              팀원의 커밋은 작업 소요가 적은 방향이었습니다. 그러나 저는 일부 무기만 사용하는
+              lunge 관련 데이터를 모든 무기가 들고 있는 것은 낭비이며, LSP 위반이라고 주장하였습니다.
+              팀원은 구조가 잘못되는 것이 왜 문제가 되느냐고 물었는데,
+              곰곰이 생각해보니 이 프로젝트에 한해서는 여기에 대답할 수 없음을 알았습니다.
+              결국 충분한 논의 끝에 팀원의 의견을 수용하였고,
+              모든 팀원과 함께 팀의 우선순위를 수정하여 구현 자체를 1순위로 두었습니다.
+              이 경험은 시간 등의 자원이 제한된 상황에서,
+              목표에 대한 팀 전체의 공통 인식이 얼마나 중요한지 깨닫게 해주었습니다.
+            </p>
+          </div>
+        </details>
         <div class="actions">
           <span class="btn off" aria-disabled="true">GitHub — 공개 준비 중</span>
         </div>
@@ -210,19 +227,6 @@
           '어떻게 구현할지'에서 무엇을 어떤 기술을 통해 어떤 구조로 짜 맞추어 나갈지로 바뀌었습니다.
           26년 6월까지는 일부러 AI 사용을 피했으나, 그 이후의 경험은
           <b>'어떻게 AI를 잘 쓸 것인가'</b>에 대한 답을 찾아가는 과정이었습니다.
-        </p>
-        <p>
-          팀장으로서 팀원들의 코드 리뷰를 하는 일이 많았습니다.
-          가장 큰 갈등은 모든 무기가 상속받는 <code>WeaponBase</code> 클래스에
-          일부 무기만 사용하는 돌진기(lunge) 관련 필드가 들어간 커밋 하나에서 출발하였습니다.
-          팀원의 커밋은 작업 소요가 적은 방향이었습니다. 그러나 저는 일부 무기만 사용하는
-          lunge 관련 데이터를 모든 무기가 들고 있는 것은 낭비이며, LSP 위반이라고 주장하였습니다.
-          팀원은 구조가 잘못되는 것이 왜 문제가 되느냐고 물었는데,
-          곰곰이 생각해보니 이 프로젝트에 한해서는 여기에 대답할 수 없음을 알았습니다.
-          결국 충분한 논의 끝에 팀원의 의견을 수용하였고,
-          모든 팀원과 함께 팀의 우선순위를 수정하여 구현 자체를 1순위로 두었습니다.
-          이 경험은 시간 등의 자원이 제한된 상황에서,
-          목표에 대한 팀 전체의 공통 인식이 얼마나 중요한지 깨닫게 해주었습니다.
         </p>
         <p>
           돌아보면 저는 계속해서 배웠고, 앞으로도 그렇게 배워나갈 듯합니다.
@@ -426,6 +430,30 @@
     });
   }
   if(v){ v.addEventListener('timeupdate', sync); sync(); }
+})();
+
+/* 타임라인 접기 블록 */
+(function(){
+  var mores = [].slice.call(document.querySelectorAll('details.tl-more'));
+  if(!mores.length) return;
+
+  /* 펼치면 문서 높이가 바뀌므로 목차가 위치를 다시 재도록 알림 */
+  mores.forEach(function(d){
+    d.addEventListener('toggle', function(){
+      window.dispatchEvent(new Event('resize'));
+    });
+  });
+
+  /* 인쇄·PDF 저장 때는 모두 펼쳐서 내보내고, 끝나면 되돌림 */
+  var forced = [];
+  window.addEventListener('beforeprint', function(){
+    forced = mores.filter(function(d){ return !d.open; });
+    forced.forEach(function(d){ d.open = true; });
+  });
+  window.addEventListener('afterprint', function(){
+    forced.forEach(function(d){ d.open = false; });
+    forced = [];
+  });
 })();
 </script>
 
