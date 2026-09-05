@@ -17,14 +17,6 @@
 <header class="topbar">
   <div class="wrap">
     <a class="brand" href="../index.html">김용오 <b>/</b> Unity Client</a>
-    <nav class="nav">
-      <a href="#intent">설계 의도</a>
-      <a href="#features">피처</a>
-      <a href="#structure">구조</a>
-      <a href="#problems">고민과 해결</a>
-      <a href="#ai">AI 활용</a>
-      <a href="#result">결과 평가</a>
-    </nav>
   </div>
 </header>
 
@@ -47,11 +39,13 @@
     </div>
 
     <div class="actions" style="margin-top:24px">
-      <a class="btn solid" href="#problems">고민과 해결 과정</a>
-      <a class="btn" href="https://github.com/GmumDev/SimpleRpgSourceCodes" target="_blank" rel="noopener">GitHub &mdash; 소스 코드</a>
+      <a class="btn solid" href="https://github.com/GmumDev/SimpleRpgSourceCodes" target="_blank" rel="noopener">GitHub &mdash; 소스 코드</a>
     </div>
   </div>
 </section>
+
+<div class="cs-layout">
+  <div class="cs-main">
 
 <!-- ===== 01 설계 의도 ===== -->
 <section class="cs-sec" id="intent">
@@ -143,7 +137,7 @@
 <!-- ===== 04 고민과 해결 ===== -->
 <section class="cs-sec" id="problems">
   <div class="wrap">
-    <h2><span class="n">04</span> 고민과 해결 (1) &mdash; EventBus</h2>
+    <h2><span class="n">04.1</span> 고민과 해결 &mdash; EventBus</h2>
     <p class="cs-note">시스템이 늘어날수록 객체 간 의존이 어떻게 번지는지를 가장 직접적으로 체감한 부분입니다.</p>
 
     <div class="flow reveal">
@@ -186,7 +180,7 @@
 <!-- ===== 05 Animator + FSM ===== -->
 <section class="cs-sec" id="fsm">
   <div class="wrap">
-    <h2><span class="n">05</span> 고민과 해결 (2) &mdash; Animator와 FSM 동기화</h2>
+    <h2><span class="n">04.2</span> 고민과 해결 &mdash; Animator와 FSM 동기화</h2>
     <p class="cs-note">가장 오래 붙들었던 문제이자, 기술 선택에 대한 판단을 다시 하게 만든 지점입니다.</p>
 
     <div class="flow reveal">
@@ -237,7 +231,7 @@ void WaitForAnim(string fromTag, string toTag, State nextState);</pre>
 <!-- ===== 06 AI 활용 ===== -->
 <section class="cs-sec" id="ai">
   <div class="wrap">
-    <h2><span class="n">06</span> AI 활용</h2>
+    <h2><span class="n">05</span> AI 활용</h2>
     <p class="cs-note">
       Gemini &middot; Claude Code CLI + Unity MCP를 사용했습니다. 어디까지 맡겼고 어디서 잘못 썼는지를 함께 남깁니다.
     </p>
@@ -281,7 +275,7 @@ void WaitForAnim(string fromTag, string toTag, State nextState);</pre>
 <!-- ===== 07 결과 평가 ===== -->
 <section class="cs-sec" id="result">
   <div class="wrap">
-    <h2><span class="n">07</span> 결과 평가</h2>
+    <h2><span class="n">06</span> 결과 평가</h2>
     <p class="cs-note">1개월이라는 기간에 비해 다소 높은 목표를 잡았고, 달성하지 못한 것들이 있습니다.</p>
 
     <dl class="verdict reveal">
@@ -337,6 +331,27 @@ void WaitForAnim(string fromTag, string toTag, State nextState);</pre>
   </div>
 </section>
 
+  </div><!-- /cs-main -->
+
+  <aside class="toc">
+    <ol id="tocList">
+      <li><a class="one" href="#intent"><span class="d">01</span><span class="t">설계 의도</span></a></li>
+      <li><a class="one" href="#features"><span class="d">02</span><span class="t">구현한 피처</span></a></li>
+      <li><a class="one" href="#structure"><span class="d">03</span><span class="t">클래스 구조</span></a></li>
+      <li>
+        <a class="one" href="#problems"><span class="d">04</span><span class="t">고민과 해결</span></a>
+        <ol>
+          <li><a class="one" href="#problems"><span class="d">1</span><span class="t">EventBus</span></a></li>
+          <li><a class="one" href="#fsm"><span class="d">2</span><span class="t">Animator · FSM</span></a></li>
+        </ol>
+      </li>
+      <li><a class="one" href="#ai"><span class="d">05</span><span class="t">AI 활용</span></a></li>
+      <li><a class="one" href="#result"><span class="d">06</span><span class="t">결과 평가</span></a></li>
+    </ol>
+  </aside>
+
+</div><!-- /cs-layout -->
+
 </main>
 
 <footer>
@@ -346,22 +361,7 @@ void WaitForAnim(string fromTag, string toTag, State nextState);</pre>
   </div>
 </footer>
 
-<script>
-(function(){
-  var items = document.querySelectorAll('.reveal');
-  if(!('IntersectionObserver' in window) ||
-     window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-    items.forEach(function(el){ el.classList.add('in'); });
-    return;
-  }
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
-    });
-  },{ threshold:.12, rootMargin:'0px 0px -8% 0px' });
-  items.forEach(function(el){ io.observe(el); });
-})();
-</script>
+<script src="../../assets/site.js"></script>
 
 </body>
 </html>

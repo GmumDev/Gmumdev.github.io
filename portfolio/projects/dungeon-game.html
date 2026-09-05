@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DungeonGame — 케이스 스터디</title>
+<meta name="description" content="순수 C#으로 만든 콘솔 로그라이크. 던전 생성기, 도달 가능성 보장 알고리즘, 버퍼 합성 렌더러, Snake 몬스터, Json 세이브/로드에 대한 기록.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="../../assets/site.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="../index.html">김용오 <b>/</b> Unity Client</a>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ===== 히어로 ===== -->
+<section class="cs-hero">
+  <div class="wrap">
+    <a class="cs-back" href="../index.html">← 포트폴리오로</a>
+    <h1>DungeonGame</h1>
+    <p class="cs-meta">콘솔 턴제 로그라이크 · 개인 · 1주 · 순수 C# (.NET) · 외부 라이브러리 없음</p>
+    <p class="cs-lede">
+      KDT 훈련과정에서 주어진 첫 프로젝트형 과제입니다.
+      엔진도 그래픽 API도 없이 <code>Console</code>만 있는 환경이었기 때문에,
+      평소 엔진이 대신 해주던 일 &mdash; 렌더 루프, 화면 레이아웃, 오브젝트 업데이트 순서 &mdash; 을
+      전부 직접 정해야 했습니다. 그 결정들을 남깁니다.
+    </p>
+
+    <div class="cs-video reveal">
+      <video src="../../media/dungeongame.mp4" poster="../../media/dungeongame-poster.jpg"
+             controls muted loop playsinline preload="metadata"></video>
+    </div>
+
+    <div class="actions" style="margin-top:24px">
+      <a class="btn solid" href="https://github.com/GmumDev/ConsoleDungeonGameSourceCode" target="_blank" rel="noopener">GitHub &mdash; 소스 코드</a>
+    </div>
+  </div>
+</section>
+
+<div class="cs-layout">
+  <div class="cs-main">
+
+<!-- ===== 01 과제와 확장 ===== -->
+<section class="cs-sec" id="intent">
+  <div class="wrap">
+    <h2><span class="n">01</span> 과제 요구사항과, 제가 덧붙인 것</h2>
+    <p class="cs-note">
+      요구사항 자체는 짧았습니다. 몬스터를 모두 잡으면 맵 클리어, 문을 통과하면 다음 맵에서 반복, 그리고 Json 세이브/로드.
+      여기에 세 가지를 더했습니다.
+    </p>
+
+    <div class="cs-grid c3 reveal">
+      <div class="cs-cell">
+        <h3><span class="n">01</span>절차적 생성</h3>
+        <p>고정 맵 대신 <b>매 스테이지를 생성</b>하기로 했습니다. 생성기가 만든 맵이 <b>항상 클리어 가능한지</b>를 보장하는 문제가 이 프로젝트에서 가장 재미있었습니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3><span class="n">02</span>직접 만든 UI</h3>
+        <p>콘솔에는 UI 시스템이 없으므로 <b>박스 단위의 렌더 계층</b>을 만들었습니다. 미니맵 · 인벤토리 · 상점 · 팝업이 모두 같은 규칙 위에 올라갑니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3><span class="n">03</span>특수 몬스터</h3>
+        <p>한 칸짜리 몬스터만으로는 맵이 단조로워서, <b>여러 칸을 차지하고 스스로 움직이는</b> Snake 계열을 넣었습니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 02 피처 ===== -->
+<section class="cs-sec" id="features">
+  <div class="wrap">
+    <h2><span class="n">02</span> 구현한 피처</h2>
+    <p class="cs-note">
+      <code>Program</code>이 <code>DungeonGame</code> 인스턴스를 만들어 <code>Play()</code>를 호출하면,
+      스테이지를 생성해 그리드 위에 맵들을 배치하고 <b>시작 맵을 현재 맵으로 잡은 뒤</b> 메인 루프에 들어갑니다.
+      루프는 <b>입력 한 번이 한 턴</b>입니다.
+    </p>
+
+    <pre class="cs-code reveal"><span class="c">// 메인 루프 (입력 한 번 = 한 턴)</span>
+1. 현재 맵의 모든 엔티티를 Update
+2. 플레이어 입력을 받는다
+   ├ W A S D  이동할 칸의 <b>Entity.OnPlayerEnter()</b> 호출
+   │          <span class="c">— 피해 · 이동 불가 · 제거 후 이동을 엔티티가 스스로 처리</span>
+   │          <span class="c">— 엔티티 혼자 처리할 수 없는 세 경우만 게임 루프가 받는다</span>
+   │          ├ Door 이고 맵을 클리어했다면        → 다음 맵으로
+   │          ├ NextStageBicon 이고 스테이지 클리어 → 다음 스테이지로
+   │          └ 처리 결과 플레이어가 죽었다면       → GameOver 팝업
+   └ Q        SaveLoad 팝업 <span class="c">(저장 · 불러오기 · 재개 · 재시작 · 종료)</span>
+3. Renderer가 화면에 정보를 그린다</pre>
+
+    <p class="cs-note" style="margin-top:26px">
+      아래는 이 루프 위에 올라간 요소들입니다.
+    </p>
+
+    <div class="cs-grid c2 reveal">
+      <div class="cs-cell">
+        <h3>스테이지 · 맵</h3>
+        <p>7×7 그리드 위에 방 3~7개를 배치합니다. 각 방은 크기가 제각각이며, 그리드 상 인접한 방끼리 <b>벽 중앙의 <code>Door</code></b>로 연결됩니다. 모든 방을 클리어하면 끝 방의 <code>NextStageBicon</code>으로 다음 스테이지에 진입합니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>엔티티</h3>
+        <p>맵은 <code>Entity[,]</code> 2차원 배열 그 자체입니다. 빈 칸도 <code>EmptyEntity</code>라는 실체를 가지므로 <b>null 검사가 필요 없고</b>, 이동은 언제나 두 칸의 <code>Swap</code>으로 표현됩니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>미니맵</h3>
+        <p>스테이지 그리드를 그대로 지도로 씁니다. <b>현재 방을 항상 화면 중앙</b>에 두고 다른 방들을 상대 좌표로 그립니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>상점 · 인벤토리</h3>
+        <p>시작 방에 <code>ItemShop</code>이 놓이고, <code>ItemDBContainer</code>에서 아이템 정보를 받아 포션 3종을 판매합니다. 구매한 아이템은 <code>InventoryBox</code>에 표시됩니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>팝업 UI</h3>
+        <p>게임 오버 · 일시정지(세이브/로드) · 상점이 모두 <code>AlertRenderBox</code> 하나로 구현됩니다. <b>키 하나에 콜백 하나</b>를 등록하는 방식입니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>세이브 · 로드</h3>
+        <p><code>System.Text.Json</code>으로 진행 중인 스테이지 · 맵 · 플레이어 상태를 통째로 저장하고 복원합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 03 구조 ===== -->
+<section class="cs-sec" id="structure">
+  <div class="wrap">
+    <h2><span class="n">03</span> 주요 클래스 구조</h2>
+    <p class="cs-note">
+      게임 로직 계층(<code>Stage</code> · <code>Map</code> · <code>Entity</code>)과 표현 계층(<code>Renderer</code> · <code>RenderBox</code>)을 나누고,
+      둘을 <code>IRenderable</code> 하나로 연결했습니다.
+    </p>
+
+    <div class="cs-grid c2 reveal">
+      <div class="cs-cell">
+        <h3>Entity</h3>
+        <p><code>IEntity</code> + <code>IRenderable</code>을 구현한 추상 클래스입니다. 핵심은 <code>OnPlayerEnter()</code>가 <b><code>string</code>을 반환</b>한다는 점입니다. 각 엔티티는 플레이어가 자기 칸에 들어왔을 때의 처리(피해 · 이동 불가 · 소멸 · 구매)를 스스로 하고, <b>화면에 띄울 메시지만 돌려줍니다.</b> 게임 루프는 그 문자열을 <code>MsgRenderBox</code>에 넘길 뿐이라 엔티티를 하나도 알지 못합니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>Map</h3>
+        <p><code>IMapDataModifier</code>를 구현해 <code>SetEntity</code> · <code>GetEntity</code> · <code>Swap</code>만 외부에 노출합니다. 클리어 조건은 필드가 아니라 <b><code>ClearChecker</code> 대리자</b>라서, 방을 채우는 방식마다 다른 조건을 꽂아 넣을 수 있습니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>StageFactory · MapFactory</h3>
+        <p>방의 <b>배치</b>(어디에 몇 개, 어떻게 연결)는 <code>StageFactory</code>가, 방의 <b>내용물</b>(무엇으로 채울지)은 <code>MapFactory</code>가 담당합니다. 이 분리 덕분에 &ldquo;맵 종류 추가&rdquo;는 <code>MapFactory</code>에 채우기 함수 하나를 더하는 일이 됩니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>Renderer · RenderBox</h3>
+        <p><code>RenderBox</code>는 자기 크기의 <code>char[,]</code> 버퍼와 여백(margin)을 가진 추상 블록입니다. <code>Renderer</code>는 전체 화면 버퍼를 갖고 있고, 각 박스가 자기 버퍼에 그린 결과를 그 위로 합성합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 04 던전 생성 ===== -->
+<section class="cs-sec" id="gen">
+  <div class="wrap">
+    <h2><span class="n">04.1</span> 고민과 해결 &mdash; 던전 생성</h2>
+    <p class="cs-note">완전 무작위로 방을 뿌리면 시작 방에서 끝 방까지 이어지지 않는 스테이지가 나옵니다.</p>
+
+    <div class="flow reveal">
+      <div class="flow-col">
+        <span class="flow-tag">문제</span>
+        <p style="margin:0 0 12px;color:var(--dim);font-size:14px;line-height:1.7">
+          방을 랜덤 좌표에 배치하면 <b>연결성</b>과 <b>방 개수</b>를 동시에 만족시키기 어렵습니다.
+          연결을 먼저 보장하려 하면 결국 한 줄로 늘어선 복도가 되고, 개수를 먼저 채우면 섬처럼 떨어진 방이 생깁니다.
+        </p>
+        <p style="margin:0;color:var(--dim);font-size:14px;line-height:1.7">
+          미니맵도 &ldquo;스테이지 전체를 어떻게 좌표로 표현할 것인가&rdquo;라는 같은 문제를 안고 있었습니다.
+        </p>
+      </div>
+      <div class="flow-col">
+        <span class="flow-tag">관점 전환</span>
+        <p style="margin:0 0 12px;color:var(--dim);font-size:14px;line-height:1.7">
+          방을 <b>자유 평면이 아니라 7×7 그리드 위의 칸</b>으로 두기로 했습니다.
+          그러면 &ldquo;인접한가&rdquo;가 좌표 뺄셈 한 번으로 판정되고, 스테이지 자체가 곧 <b>그래프</b>가 됩니다.
+        </p>
+        <p style="margin:0;color:var(--dim);font-size:14px;line-height:1.7">
+          미니맵은 이 그리드를 그대로 그리면 되므로, 자료구조 하나가 <b>생성 · 연결 · 표시</b> 세 가지를 동시에 해결했습니다.
+        </p>
+      </div>
+    </div>
+
+    <div class="flow-col solved reveal" style="margin-top:20px">
+      <span class="flow-tag">해결 &mdash; 메인 경로 먼저, 곁방은 나중에</span>
+      <ul class="cs-list">
+        <li><b>1. 개수와 양 끝 결정</b> &mdash; 방 개수를 3~7 중에서 뽑고, 시작 칸을 랜덤으로 정합니다. 끝 칸은 <b>맨해튼 거리가 방 개수보다 작은 칸</b> 중에서 고릅니다. 이 조건 하나로 &ldquo;방이 모자라 끝에 닿지 못하는&rdquo; 경우가 원천적으로 사라집니다.</li>
+        <li><b>2. 메인 경로</b> &mdash; 시작에서 끝까지 <b>최단 경로</b>를 따라가되, x축과 y축 중 어느 쪽을 먼저 줄일지를 매 칸 랜덤으로 정합니다. 결과는 항상 최단 경로이면서 매번 모양이 다릅니다.</li>
+        <li><b>3. 곁방</b> &mdash; 남은 개수만큼, 이미 배치된 방 중 하나를 골라 인접한 빈 칸에 방을 추가합니다. 새로 생긴 곁방도 후보 집합에 합류하므로 <b>곁방에서 다시 곁방이 뻗어 나갑니다.</b> 어떤 방도 기존 방과 붙어서 생기기 때문에 연결성은 계속 유지됩니다.</li>
+        <li><b>4. 문 연결</b> &mdash; 배치가 끝나면 각 방이 네 방향 이웃을 훑어 <code>Door</code>를 만들고 서로를 참조시킵니다.</li>
+        <li><b>5. 클리어 조건</b> &mdash; 스테이지의 <code>IsClear</code>는 &ldquo;그리드 위 모든 방의 <code>IsClear</code>가 참&rdquo;인 람다로 조립됩니다.</li>
+      </ul>
+      <p style="margin:16px 0 0;color:var(--dim);font-size:14px;line-height:1.7">
+        방의 <b>내용물</b>은 <code>MapFactory</code>가 <code>List&lt;FillUpMapDelegate&gt;</code>에서 하나를 랜덤으로 골라 채웁니다
+        (기본 · Snake · Snake 알 · BigSnake). 시작 방과 끝 방만 전용 함수로 고정됩니다.
+        새 방 유형을 늘리려면 함수를 하나 쓰고 리스트에 넣기만 하면 됩니다.
+      </p>
+      <pre class="cs-code"><span class="c">// 방의 종류 = 채우는 방법. 목록에 추가하는 것만으로 늘어난다.</span>
+FillUpMapTasks.Add(FillUpMap_Default);
+FillUpMapTasks.Add(FillUpMap_Snake);
+FillUpMapTasks.Add(FillUpMap_SnakeGrowUp);
+FillUpMapTasks.Add(FillUpMap_BigSnake);
+
+<span class="c">// 채우는 방법이 그 방의 클리어 조건까지 함께 정한다.</span>
+map.IsClear = () =&gt; map.GetMapData()["monster_cnt"] == 0;</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 05 도달 가능성 ===== -->
+<section class="cs-sec" id="reachable">
+  <div class="wrap">
+    <h2><span class="n">04.2</span> 고민과 해결 &mdash; 막힌 맵이 나오지 않게</h2>
+    <p class="cs-note">방 안에도 장애물(<code>Fence</code>)을 뿌려야 하는데, 이게 길을 끊어버릴 수 있었습니다.</p>
+
+    <div class="flow reveal">
+      <div class="flow-col">
+        <span class="flow-tag">문제</span>
+        <p style="margin:0 0 12px;color:var(--dim);font-size:14px;line-height:1.7">
+          방 넓이의 약 17%를 장애물로 채우다 보니, <b>몬스터가 벽에 둘러싸여 잡을 수 없거나</b>
+          <b>문에서 문으로 지나갈 수 없는</b> 방이 종종 생성됐습니다.
+          클리어 조건이 &ldquo;모든 몬스터 처치&rdquo;이므로 이건 곧 <b>진행 불가</b>입니다.
+        </p>
+        <p style="margin:0;color:var(--dim);font-size:14px;line-height:1.7">
+          네 개의 문 중 어느 문으로 들어올지는 플레이어가 정하므로,
+          <b>어느 문에서 출발하든</b> 모든 몬스터와 모든 문에 닿을 수 있어야 했습니다.
+        </p>
+      </div>
+      <div class="flow-col">
+        <span class="flow-tag">판단</span>
+        <p style="margin:0 0 12px;color:var(--dim);font-size:14px;line-height:1.7">
+          장애물을 &ldquo;길을 막지 않도록 조심해서 놓는&rdquo; 규칙을 만드는 대신,
+          <b>일단 놓고 검사한 뒤 실패하면 다시 놓기로</b> 했습니다.
+        </p>
+        <p style="margin:0;color:var(--dim);font-size:14px;line-height:1.7">
+          방 크기가 작고(최대 60×45) 실패 확률이 낮아 재시도 비용이 무시할 만했고,
+          무엇보다 <b>배치 규칙과 검증 규칙이 분리</b>되어 이후에 어떤 배치 방식을 추가해도 검증이 그대로 재사용됩니다.
+        </p>
+      </div>
+    </div>
+
+    <div class="flow-col solved reveal" style="margin-top:20px">
+      <span class="flow-tag">해결 &mdash; 네 문에서 각각 BFS, 그리고 교집합</span>
+      <p style="margin:0 0 16px;color:var(--dim);font-size:14px;line-height:1.7">
+        &ldquo;모든 출발점에서 닿는 칸&rdquo;은 <b>각 출발점의 도달 집합을 교집합</b>한 것과 같습니다.
+        네 개의 문 각각에서 BFS를 돌려 도달 가능한 칸 집합을 구하고, 그 교집합이 <b>반드시 닿아야 하는 칸(몬스터 · 문)을 모두 포함하는지</b>만 확인하면 됩니다.
+      </p>
+      <pre class="cs-code"><span class="c">// 배치 → 검증 → 실패 시 재배치</span>
+do {
+    GetRandomEmptyPos(map, ref fencePos, many);           <span class="c">// 후보 배치</span>
+    GetReachables(map, ref reachables, doors, ..., fencePos);
+    flag = endPos.All(p =&gt; reachables.Contains(p));       <span class="c">// 몬스터·문이 모두 도달 가능한가</span>
+} while (flag == false);
+
+<span class="c">// GetReachables 내부: 각 문에서 BFS한 결과를 교집합</span>
+visited.UnionWith(subVisited[0]);
+for (int i = 1; i &lt; starts.Length; i++)
+    visited.IntersectWith(subVisited[i]);</pre>
+      <ul class="cs-list" style="margin-top:18px">
+        <li><b>후보 상태로 검사</b> &mdash; <code>Fence</code> 객체를 실제로 만들기 전, 좌표 집합만으로 BFS의 통행 금지 칸을 흉내 냅니다. 검증에 통과한 좌표에 대해서만 엔티티를 생성하므로 <b>실패한 시도가 맵을 오염시키지 않습니다.</b></li>
+        <li><b>목표 지점의 정의</b> &mdash; 반드시 닿아야 하는 칸은 &ldquo;처치해야 하는 몬스터&rdquo;와 &ldquo;문&rdquo;입니다. Snake 계열은 처치가 클리어 조건이 아니므로 이 목록에서 빠집니다 &mdash; 클리어 조건과 검증 대상이 <b>같은 곳을 바라보도록</b> 맞춘 부분입니다.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 06 렌더링 ===== -->
+<section class="cs-sec" id="render">
+  <div class="wrap">
+    <h2><span class="n">04.3</span> 고민과 해결 &mdash; 콘솔에 화면을 그리기</h2>
+    <p class="cs-note">엔진이 대신 해주던 일 중 가장 티가 나는 것이 렌더링이었습니다.</p>
+
+    <div class="flow reveal">
+      <div class="flow-col">
+        <span class="flow-tag">문제</span>
+        <p style="margin:0 0 12px;color:var(--dim);font-size:14px;line-height:1.7">
+          <code>Console.WriteLine</code>을 여러 번 호출하면 <b>화면이 눈에 띄게 깜빡입니다.</b>
+          맵 · 미니맵 · 메시지 · 플레이어 정보 · 인벤토리 · 입력창을 각각 출력하면 그 횟수만큼 깜빡임이 늘어납니다.
+        </p>
+        <p style="margin:0;color:var(--dim);font-size:14px;line-height:1.7">
+          여기에 각 정보를 <b>화면 어디에 배치할지</b>도 직접 계산해야 했습니다.
+        </p>
+      </div>
+      <div class="flow-col">
+        <span class="flow-tag">해결</span>
+        <p style="margin:0 0 12px;color:var(--dim);font-size:14px;line-height:1.7">
+          출력과 그리기를 나눴습니다. 모든 요소는 <code>char[,]</code> 버퍼에 <b>그리기만</b> 하고,
+          최종적으로 <code>Renderer</code>가 전체 버퍼를 <code>StringBuilder</code>로 이어 붙여 <b>한 번만 출력</b>합니다.
+          커서를 <code>(0, 0)</code>으로 되돌리고 덮어쓰므로 화면 클리어도 필요 없습니다.
+        </p>
+        <p style="margin:0;color:var(--dim);font-size:14px;line-height:1.7">
+          <code>Entity</code>와 <code>RenderBox</code>가 같은 <code>IRenderable.Render(char[,] parentBuf)</code>를 구현합니다.
+          엔티티는 맵의 버퍼에, 박스는 화면 버퍼에 그리는 <b>같은 형태의 재귀적 합성</b>입니다.
+        </p>
+      </div>
+    </div>
+
+    <div class="cs-grid c3 reveal" style="margin-top:20px">
+      <div class="cs-cell">
+        <h3>레이아웃</h3>
+        <p>각 박스의 여백을 <b>이전 박스의 여백 + 크기</b>로 계산해 연쇄시켰습니다. 맵 박스 오른쪽에 미니맵, 그 오른쪽에 메시지, 미니맵 아래에 플레이어 정보 &mdash; 하드코딩된 좌표 없이 순서만으로 배치가 정해집니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>미니맵</h3>
+        <p><b>현재 방을 항상 화면 중앙(<code>┼</code>)</b>에 고정하고, 다른 방들을 그리드 좌표 차이에 배율 3을 곱한 위치에 3×3 테두리 문자로 그립니다. 플레이어가 이동하면 지도가 따라 흐릅니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>팝업</h3>
+        <p><code>AlertRenderer</code>가 <b>발생한 팝업 큐 → 입력 → 콜백 큐</b> 순서로 처리합니다. <code>SetCallback('S', "Save", SaveGame)</code>처럼 <b>키 · 표시 문구 · 동작을 한 줄로 등록</b>하므로, 게임 오버 · 일시정지 · 상점이 모두 같은 클래스입니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 07 Snake ===== -->
+<section class="cs-sec" id="snake">
+  <div class="wrap">
+    <h2><span class="n">04.4</span> 고민과 해결 &mdash; 여러 칸을 차지하는 몬스터</h2>
+    <p class="cs-note">
+      한 칸에 하나씩 놓인 몬스터를 순서대로 잡는 것만으로는 방이 단조로웠습니다.
+      &ldquo;머리와 꼬리가 이어져 스스로 기어 다니는&rdquo; 몬스터를 넣기로 했습니다.
+    </p>
+
+    <div class="cs-grid c2 reveal">
+      <div class="cs-cell">
+        <h3>몸통 이동</h3>
+        <p><code>Snake_Head</code>가 <code>List&lt;Entity&gt; bodies</code>로 자기 몸을 들고 있습니다. 매 턴 인접한 빈 칸 중 하나로 머리를 옮기고, 각 마디를 <b>바로 앞 마디의 직전 위치</b>로 밀어 넣습니다. 좌표를 새로 계산하지 않고 <code>Map.Swap</code>만 반복하므로 맵의 무결성이 저절로 지켜집니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>갇힘 처리</h3>
+        <p>사방이 막혀 5턴 동안 움직이지 못하면 <b>몸 전체를 뒤집습니다</b>(머리와 꼬리를 맞바꿈). 구석에 박혀 영원히 멈춰 있는 상태를 코드 몇 줄로 벗어납니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>다른 클리어 조건</h3>
+        <p>Snake는 <b>잡을 수 없습니다</b>(닿으면 피해). 대신 일정 턴이 지나면 매 턴 확률적으로 <b>꼬리 끝에 <code>MapClearBicon</code></b>을 뱉고, 플레이어가 그것을 주우면 방이 클리어됩니다. 확률은 턴마다 조금씩 올라가 <b>기다림이 무한정 길어지지 않도록</b> 했습니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>변주 &mdash; 상속과 성장</h3>
+        <p><code>BigSnake_Head</code>는 <code>Snake_Head</code>를 상속해 <b><code>AddTail()</code>을 더 부르는 것</b>이 전부입니다. <code>SnakeBaby</code>는 20~40턴 뒤 <code>Snake_Head</code>로 자라며, <b>부화 5턴 전부터 기호가 바뀌어</b> 플레이어에게 경고합니다.</p>
+      </div>
+    </div>
+
+    <div class="flow-col solved reveal" style="margin-top:20px">
+      <span class="flow-tag">덤으로 만난 문제 &mdash; 한 턴에 두 번 움직이는 몬스터</span>
+      <p style="margin:0;color:var(--dim);font-size:14px;line-height:1.7">
+        맵을 2차원 배열 순서대로 순회하며 <code>Update()</code>를 호출하는데,
+        엔티티가 <b>아직 순회하지 않은 칸으로 이동</b>하면 같은 턴에 한 번 더 갱신됩니다.
+        <code>IsUpdatedOnCurFrame</code> 플래그를 턴 시작에 일괄 초기화하고 갱신 직전에 세우는 것으로 막았습니다.
+        &ldquo;순회 중에 순회 대상이 움직인다&rdquo;는 문제를 처음 제대로 만난 지점이었습니다.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 08 세이브 ===== -->
+<section class="cs-sec" id="save">
+  <div class="wrap">
+    <h2><span class="n">05</span> 세이브 · 로드</h2>
+    <p class="cs-note">런타임 객체를 그대로 직렬화할 수 없다는 것을 처음 체감한 부분입니다.</p>
+
+    <div class="cs-grid c2 reveal">
+      <div class="cs-cell">
+        <h3>Raw 구조체</h3>
+        <p>런타임 객체는 서로를 참조합니다 &mdash; <code>Door</code>는 옆 방을, 엔티티는 맵을. 이 그물을 그대로 Json으로 만들 수 없어서, <b>순환 참조가 없는 평평한 구조체</b>(<code>RawGameData</code> · <code>RawStageData</code> · <code>RawMapData</code> · <code>RawPlayerData</code> · <code>RawItemData</code>)를 따로 정의했습니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>RawDataParser</h3>
+        <p>런타임 객체 ↔ Raw 구조체 변환만 담당하는 static <b>어댑터</b>입니다. 게임 클래스도 <code>Utility</code>의 Json 함수도 서로를 모르는 채로, 저장 형식이 바뀌어도 이 클래스만 고치면 됩니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>복원 경로 분리</h3>
+        <p>새 게임은 <code>SetNewStage()</code>, 불러오기는 <code>SetNewStageWithRawData()</code>로 나뉩니다. 후자는 <b>랜덤 채우기를 건너뛰고</b> 저장된 엔티티 배치를 그대로 복원한 뒤, 문 연결만 다시 계산합니다.</p>
+      </div>
+      <div class="cs-cell">
+        <h3>실패 처리</h3>
+        <p>저장 파일이 없으면 예외를 잡아 &ldquo;No Saved Data&rdquo; 메시지로 대체합니다. 게임을 중단시키지 않고 <b>메시지 박스로 흘려보내는</b> 방식입니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 09 결과 평가 ===== -->
+<section class="cs-sec" id="result">
+  <div class="wrap">
+    <h2><span class="n">06</span> 결과 평가</h2>
+    <p class="cs-note">1주짜리 첫 과제였고, 지금 다시 보면 눈에 밟히는 것이 많습니다.</p>
+
+    <dl class="verdict reveal">
+      <dt>달성</dt>
+      <dd>
+        요구사항(맵 클리어 · 맵 이동 · Json 세이브/로드)을 모두 충족했고,
+        그 위에 <b>절차적 던전 생성 · 도달 가능성 보장 · 미니맵 · 박스 UI · 상점 · Snake 계열 몬스터</b>를 더했습니다.
+        무엇보다 <b>완주 가능한 게임 사이클</b>이 돌아갑니다.
+      </dd>
+
+      <dt>배운 점</dt>
+      <dd>
+        엔진 없이 만들면서 <b>업데이트 순서 · 렌더 버퍼 · 레이아웃 계산</b>이 원래 누가 해주던 일인지를 알게 됐습니다.
+        &ldquo;<b>배치하고 검증하고 실패하면 다시</b>&rdquo;라는 접근은, 규칙을 완벽하게 설계하는 것보다 검증을 분리하는 편이 나을 때가 있다는 것을 알려줬습니다.
+      </dd>
+
+      <dt>아쉬운 점</dt>
+      <dd>
+        <b><code>Entity.map</code>이 <code>static</code></b>입니다. 모든 엔티티가 현재 맵 전체를 수정할 수 있다는 뜻이라,
+        작성 당시에도 <code>// too many authority</code>라는 주석을 달아 두었으면서 끝까지 고치지 않았습니다.
+        맵의 상태를 <b><code>Dictionary&lt;string, int&gt;</code></b>로 들고 <code>"monster_" + i + "_x"</code>처럼 문자열을 조합해 접근하는 부분도
+        타입 안전하지 않고 오타에 무방비합니다 &mdash; 전용 구조체였어야 했습니다.
+        <code>StageFactory</code>는 이름과 달리 생성뿐 아니라 스테이지 보관 · 조회까지 겸하고 있어 책임이 둘입니다.
+      </dd>
+
+      <dt>구조적 한계</dt>
+      <dd>
+        장애물 배치의 재시도 루프(<code>do-while</code>)는 <b>종료가 보장되지 않습니다.</b>
+        지금의 방 크기와 장애물 비율에서는 실질적으로 문제가 없지만,
+        비율을 올리면 무한 루프에 빠질 수 있으므로 <b>시도 횟수 상한과 실패 시 완화 전략</b>이 있어야 했습니다.
+        <code>Snake_Head</code>는 이동 · 성장 · 비콘 생성 · 갇힘 탈출을 <code>Update()</code> 하나에서 처리해 길고, 상태로 분리하는 편이 나았습니다.
+      </dd>
+
+      <dt>총평</dt>
+      <dd>
+        요구사항을 채우는 데서 멈추지 않고 <b>스스로 문제를 하나 더 만들어 푼 것</b>이 이 과제에서 가장 잘한 선택이었다고 생각합니다.
+      </dd>
+    </dl>
+  </div>
+</section>
+
+  </div><!-- /cs-main -->
+
+  <aside class="toc">
+    <ol id="tocList">
+      <li><a class="one" href="#intent"><span class="d">01</span><span class="t">과제와 확장</span></a></li>
+      <li><a class="one" href="#features"><span class="d">02</span><span class="t">구현한 피처</span></a></li>
+      <li><a class="one" href="#structure"><span class="d">03</span><span class="t">클래스 구조</span></a></li>
+      <li>
+        <a class="one" href="#gen"><span class="d">04</span><span class="t">고민과 해결</span></a>
+        <ol>
+          <li><a class="one" href="#gen"><span class="d">1</span><span class="t">던전 생성</span></a></li>
+          <li><a class="one" href="#reachable"><span class="d">2</span><span class="t">도달 가능성</span></a></li>
+          <li><a class="one" href="#render"><span class="d">3</span><span class="t">렌더링</span></a></li>
+          <li><a class="one" href="#snake"><span class="d">4</span><span class="t">Snake 몬스터</span></a></li>
+        </ol>
+      </li>
+      <li><a class="one" href="#save"><span class="d">05</span><span class="t">세이브 · 로드</span></a></li>
+      <li><a class="one" href="#result"><span class="d">06</span><span class="t">결과 평가</span></a></li>
+    </ol>
+  </aside>
+
+</div><!-- /cs-layout -->
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 김용오</span>
+    <span><a href="../index.html" style="text-decoration:none">포트폴리오로 돌아가기</a></span>
+  </div>
+</footer>
+
+<script src="../../assets/site.js"></script>
+
+</body>
+</html>

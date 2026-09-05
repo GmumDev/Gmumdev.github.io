@@ -33,9 +33,11 @@
   <div class="wrap">
     <div class="vhero-inner">
       <p class="eyebrow">Unity Client Developer · 신입</p>
-      <h1>함께<br>그러나 자유롭게<br>그래도 뼈대는 무너지지 않게</h1>
+      <h1>함께<br>자유롭게<br>뼈대는 탄탄하게</h1>
       <p class="lede">
-        AI 도구가 없던 2017년부터 장르를 가리지 않고 만들어 왔고,
+        AI 도구가 없던 2017년부터 장르를 가리지 않고 만들어 왔고
+      </p>
+      <p class="lede">
         지금은 여럿이 함께 작업하는 환경 자체에 관심이 있습니다.
       </p>
       <p class="lede">
@@ -65,7 +67,7 @@
         </p>
         <ul class="speclist">
           <li><span class="k">주력</span><span class="v">Unity · C#</span></li>
-          <li><span class="k">경험</span><span class="v">Addressables · JobSystem · Photon Fusion 2</span></li>
+          <li><span class="k">경험</span><span class="v">Addressables · ECS · Photon Fusion 2</span></li>
           <li><span class="k">협업 · 인프라</span><span class="v">asmdef 모듈 분리 · pre-commit 훅 규칙 검사 · 의존성 주입 · 단위 테스트</span></li>
           <li><span class="k">프로젝트</span><span class="v">개인 2건 · 팀 4건 (팀장 3회)</span></li>
         </ul>
@@ -96,6 +98,7 @@
           상점, 박스형 UI를 추가로 구현하였습니다.
         </p>
         <div class="actions">
+          <a class="btn solid" href="projects/dungeon-game.html">케이스 스터디</a>
           <a class="btn" href="https://github.com/GmumDev/ConsoleDungeonGameSourceCode" target="_blank" rel="noopener">GitHub — 소스 코드</a>
         </div>
       </div>
@@ -148,6 +151,12 @@
       <div class="tl-body">
         <h2>Winter Stove<span class="tl-tag lead">팀장</span><span class="tl-tag">VR</span></h2>
         <p class="tl-role">초기 프로젝트 세팅 · 이벤트 채널 구조 설계 · 사건 컨텐츠 — 1개월</p>
+
+        <div class="tl-media">
+          <video src="../media/winterstove.mp4" poster="../media/winterstove-poster.jpg"
+                 controls muted loop playsinline preload="none"></video>
+        </div>
+
         <p>
           팀 전원 VR 관련 SDK 사용 경험이 없었으므로 초기 프로젝트 세팅 후 팀 단위 스터디를 진행하였습니다.
           팀원이 모두 ScriptableObject에 친숙하였기에, 이를 이벤트 채널로 사용하여
@@ -155,6 +164,7 @@
           주기적으로 발생하는 사건 컨텐츠를 설계 및 구현하였습니다.
         </p>
         <div class="actions">
+          <a class="btn solid" href="projects/winter-stove.html">케이스 스터디</a>
           <span class="btn off" aria-disabled="true">GitHub — 공개 준비 중</span>
         </div>
       </div>
@@ -166,6 +176,12 @@
       <div class="tl-body">
         <h2>Wielder<span class="tl-tag lead">팀장</span><span class="tl-tag">멀티플레이</span><span class="tl-tag wip">진행 중</span></h2>
         <p class="tl-role">모듈 경계 설계 · 커밋 검사 자동화 · 모듈 간 이벤트 통신 · 네트워크 · 초기 무기 시스템 · 잡몹 · 일부 보스</p>
+
+        <div class="tl-media">
+          <video src="../media/wielder.mp4" poster="../media/wielder-poster.jpg"
+                 controls muted loop playsinline preload="none"></video>
+        </div>
+
         <p>
           Photon Fusion 2 경험이 없는 팀이 AI로 작업할 경우
           수정 비용이 큰 충돌이나 회귀가 발생할 수 있다는 점을 가장 큰 리스크로 봤습니다.
@@ -174,23 +190,6 @@
           pre-commit 훅이 매 커밋마다 위반 여부를 검사하도록 구성했습니다.
           초기 비용은 적지 않았지만, 덕분에 후반에는 개발과 출시 준비를 병행할 수 있었습니다.
         </p>
-        <details class="tl-more">
-          <summary>갈등과 팀 우선순위 수정</summary>
-          <div class="tl-more-body">
-            <p>
-              모든 무기가 상속받는 <code>WeaponBase</code> 클래스에
-              일부 무기만 사용하는 돌진기(lunge) 관련 필드가 들어간 커밋 하나에서 출발하였습니다.
-              팀원의 커밋은 작업 소요가 적은 방향이었습니다. 그러나 저는 일부 무기만 사용하는
-              lunge 관련 데이터를 모든 무기가 들고 있는 것은 낭비이며, LSP 위반이라고 주장하였습니다.
-              팀원은 구조가 잘못되는 것이 왜 문제가 되느냐고 물었는데,
-              곰곰이 생각해보니 이 프로젝트에 한해서는 여기에 대답할 수 없음을 알았습니다.
-              결국 충분한 논의 끝에 팀원의 의견을 수용하였고,
-              모든 팀원과 함께 팀의 우선순위를 수정하여 구현 자체를 1순위로 두었습니다.
-              이 경험은 시간 등의 자원이 제한된 상황에서,
-              목표에 대한 팀 전체의 공통 인식이 얼마나 중요한지 깨닫게 해주었습니다.
-            </p>
-          </div>
-        </details>
         <div class="actions">
           <span class="btn off" aria-disabled="true">GitHub — 공개 준비 중</span>
         </div>
@@ -323,24 +322,9 @@
   </div>
 </dialog>
 
-<script>
-/* 등장 모션 */
-(function(){
-  var items = document.querySelectorAll('.reveal');
-  if(!items.length) return;
-  if(!('IntersectionObserver' in window) ||
-     window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-    items.forEach(function(el){ el.classList.add('in'); });
-    return;
-  }
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
-    });
-  },{ threshold:.12, rootMargin:'0px 0px -8% 0px' });
-  items.forEach(function(el){ io.observe(el); });
-})();
+<script src="../assets/site.js"></script>
 
+<script>
 /* 배경 영상: 모션 최소화 설정이면 정지 */
 (function(){
   var bg = document.querySelector('.vhero-bg video');
@@ -349,44 +333,6 @@
     bg.removeAttribute('autoplay');
     bg.pause();
   }
-})();
-
-/* 목차 스크롤 추적 */
-(function(){
-  var links = [].slice.call(document.querySelectorAll('#tocList a'));
-  if(!links.length) return;
-  var items = links.map(function(a){
-    return { link:a, el:document.querySelector(a.getAttribute('href')), top:0 };
-  }).filter(function(x){ return x.el; });
-  if(!items.length) return;
-
-  /* 위치는 로드/리사이즈 때만 계산 — 스크롤 중에는 레이아웃을 읽지 않음 */
-  function measure(){
-    var y = window.pageYOffset;
-    for(var i=0;i<items.length;i++){
-      items[i].top = items[i].el.getBoundingClientRect().top + y;
-    }
-  }
-  function update(){
-    var line = window.pageYOffset + 120;      // 상단바 아래 기준선
-    var active = items[0];
-    for(var i=0;i<items.length;i++){
-      if(items[i].top <= line) active = items[i];
-    }
-    if(window.innerHeight + window.pageYOffset >= document.documentElement.scrollHeight - 4){
-      active = items[items.length-1];         // 문서 끝에서는 마지막 항목
-    }
-    for(var j=0;j<items.length;j++){
-      items[j].link.classList.toggle('on', items[j] === active);
-    }
-  }
-  function remeasure(){ measure(); update(); }
-
-  window.addEventListener('scroll', update, { passive:true });
-  window.addEventListener('resize', remeasure);
-  window.addEventListener('load', remeasure);
-  document.addEventListener('loadedmetadata', remeasure, true);
-  remeasure();
 })();
 
 /* 아카이브 팝업 */
@@ -432,29 +378,6 @@
   if(v){ v.addEventListener('timeupdate', sync); sync(); }
 })();
 
-/* 타임라인 접기 블록 */
-(function(){
-  var mores = [].slice.call(document.querySelectorAll('details.tl-more'));
-  if(!mores.length) return;
-
-  /* 펼치면 문서 높이가 바뀌므로 목차가 위치를 다시 재도록 알림 */
-  mores.forEach(function(d){
-    d.addEventListener('toggle', function(){
-      window.dispatchEvent(new Event('resize'));
-    });
-  });
-
-  /* 인쇄·PDF 저장 때는 모두 펼쳐서 내보내고, 끝나면 되돌림 */
-  var forced = [];
-  window.addEventListener('beforeprint', function(){
-    forced = mores.filter(function(d){ return !d.open; });
-    forced.forEach(function(d){ d.open = true; });
-  });
-  window.addEventListener('afterprint', function(){
-    forced.forEach(function(d){ d.open = false; });
-    forced = [];
-  });
-})();
 </script>
 
 </body>
