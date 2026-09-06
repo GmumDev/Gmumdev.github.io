@@ -299,8 +299,7 @@ void WaitForAnim(string fromTag, string toTag, State nextState);</pre>
       <dt>배운 점</dt>
       <dd>
         서로 다른 객체의 상태를 전달하는 방식(EventBus · delegate · 싱글턴 메서드)을 <b>기능의 확장 가능성, 사건의 무게감과 빈도, 두 객체의 관계</b>에 따라 고르게 되었습니다.
-        비동기 반환 타입(<code>async void</code> · <code>async Task</code> · <code>async Awaitable</code>)은 모르고 쓰다가 예외가 삼켜지는 일을 겪고서야 제대로 알게 됐습니다
-        (<a href="https://develog.kiweb.or.kr/@user_1776858831954/stars-%EC%98%A4%EB%A5%98-%EC%82%BC%EC%BC%9C%EC%A7%90-%ED%98%84%EC%83%81" target="_blank" rel="noopener" style="color:var(--ink);text-decoration:underline;text-underline-offset:3px">글로 정리했습니다 →</a>).
+        비동기 반환 타입(<code>async void</code> · <code>async Task</code> · <code>async Awaitable</code>)은 모르고 쓰다가 예외가 삼켜지는 일을 겪고서야 제대로 알게 됐습니다.
         계층적 FSM과 Player FSM에 UI FSM을 연동하는 방식, UI Layout 컴포넌트도 이때 익혔습니다.
       </dd>
 
